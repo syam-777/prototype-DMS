@@ -1,9 +1,12 @@
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { insert, getAll } = require('../db/init');
+
+const DB_PATH = path.join(__dirname, '..', 'data', 'database.json');
 
 /**
  * Create a hash-chained audit log entry.
- * No db parameter needed — imports db functions directly.
  */
 function createAuditEntry({ action, userId, documentId, ipAddress, details }) {
   const allEntries = getAll('audit_log');
@@ -32,10 +35,19 @@ function createAuditEntry({ action, userId, documentId, ipAddress, details }) {
 
 /**
  * Verify the integrity of the audit chain.
- * No db parameter needed — imports db functions directly.
+ * Reads DIRECTLY from the database file on disk (not memory)
+ * so it can detect if someone tampered with the file.
  */
 function verifyAuditChain() {
-  const entries = getAll('audit_log').sort((a, b) => a.id - b.id);
+  // Read directly from disk to detect file-level tampering
+  let entries;
+  try {
+    const raw = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+    entries = (raw.db.audit_log || []).sort((a, b) => a.id - b.id);
+  } catch (err) {
+    return { valid: false, entries: 0, brokenAt: null, error: 'Cannot read database file' };
+  }
+
   let expectedPrevHash = 'GENESIS';
 
   for (let i = 0; i < entries.length; i++) {
