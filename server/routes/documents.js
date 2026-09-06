@@ -141,7 +141,8 @@ router.get('/:id', authenticate, checkDocumentAccess('view'), (req, res) => {
     // Join access entries with user info
     const accessEntries = find('document_access', a => a.document_id === docId).map(a => {
       const user = findOne('users', u => u.id === a.user_id);
-      return { ...a, username: user ? user.username : 'unknown' };
+      const granter = findOne('users', u => u.id === a.granted_by);
+      return { ...a, user_name: user ? user.full_name : 'Unknown', username: user ? user.username : 'unknown', granted_by_name: granter ? granter.full_name : '-' };
     });
 
     // Join signatures with user info

@@ -277,7 +277,7 @@ export default function DocumentViewPage() {
                         </span>
                       </td>
                       <td className="p-3 text-sm text-slate-500">{a.granted_by_name || '-'}</td>
-                      <td className="p-3 text-sm text-slate-500">{new Date(a.created_at).toLocaleDateString()}</td>
+                      <td className="p-3 text-sm text-slate-500">{a.granted_at ? new Date(a.granted_at).toLocaleDateString() : '-'}</td>
                     </tr>
                   ))}
                   {access?.length === 0 && (
@@ -329,7 +329,7 @@ export default function DocumentViewPage() {
             >
               <option value="">-- Choose User --</option>
               {users.map(u => (
-                <option key={u.id} value={u.id}>{u.username} ({u.role})</option>
+                <option key={u.id} value={u.id}>{u.full_name} — {u.role}</option>
               ))}
             </select>
           </div>
