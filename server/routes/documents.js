@@ -133,6 +133,7 @@ router.get('/:id', authenticate, checkDocumentAccess('view'), (req, res) => {
         changed_by: v.changed_by,
         change_description: v.change_description,
         file_size: v.file_size,
+        text_content: v.text_content,
         created_at: v.created_at
       }))
       .sort((a, b) => b.version_number - a.version_number);

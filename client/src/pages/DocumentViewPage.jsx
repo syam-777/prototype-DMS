@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Download, Edit, Shield, History, Users, Activity, FileText, Share2, PenTool } from 'lucide-react';
+import { Download, Edit, Shield, History, Users, Activity, FileText, Share2, PenTool, Eye } from 'lucide-react';
 import api from '../utils/api';
 import { AuthContext } from '../contexts/AuthContext';
 import ClassificationBadge from '../components/ClassificationBadge';
@@ -137,6 +137,9 @@ export default function DocumentViewPage() {
         <button onClick={() => setActiveTab('details')} className={`px-6 py-3 font-medium text-sm flex items-center border-b-2 ${activeTab === 'details' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-600 hover:bg-slate-100'}`}>
           <FileText className="w-4 h-4 mr-2" /> Details
         </button>
+        <button onClick={() => setActiveTab('content')} className={`px-6 py-3 font-medium text-sm flex items-center border-b-2 ${activeTab === 'content' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-600 hover:bg-slate-100'}`}>
+          <Eye className="w-4 h-4 mr-2" /> Content Preview
+        </button>
         <button onClick={() => setActiveTab('versions')} className={`px-6 py-3 font-medium text-sm flex items-center border-b-2 ${activeTab === 'versions' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-slate-600 hover:bg-slate-100'}`}>
           <History className="w-4 h-4 mr-2" /> Versions ({versions?.length || 0})
         </button>
@@ -188,6 +191,30 @@ export default function DocumentViewPage() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'content' && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800">Document Content Preview</h3>
+              <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                Version {document.current_version}
+              </span>
+            </div>
+            {versions && versions.length > 0 && versions[0].text_content ? (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
+                <pre className="whitespace-pre-wrap font-serif text-sm text-slate-800 leading-relaxed">
+                  {versions[0].text_content}
+                </pre>
+              </div>
+            ) : (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+                <Eye className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+                <p className="text-amber-800 font-medium">Content preview not available</p>
+                <p className="text-amber-600 text-sm mt-1">This document is a binary file (PDF, image, etc.) and cannot be previewed as text. Please download the file to view it.</p>
+              </div>
+            )}
           </div>
         )}
 
